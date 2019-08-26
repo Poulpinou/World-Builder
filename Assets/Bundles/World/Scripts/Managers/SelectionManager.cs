@@ -7,13 +7,16 @@ using System;
 
 namespace WorldBuilder.World
 {
+    /// <summary>
+    /// This class manages the selection of <see cref="WorldObject"/>
+    /// </summary>
     public class SelectionManager : StaticManager<SelectionManager>
     {
         #region Enums
         public enum SelectionMode { single, many, none }
         #endregion
 
-        #region PrivateVariables
+        #region Private Variables
         SelectionMode selectionMode = SelectionMode.single;
 
         List<WorldObject> selected = new List<WorldObject>();
@@ -21,12 +24,16 @@ namespace WorldBuilder.World
         Type typeRestriction = null;
         #endregion
 
+        #region Events
+        public static WorldObjectListEvent onSelectionChanged = new WorldObjectListEvent();
+        #endregion
+
         #region Properties
         /// <summary>
         /// Get or Set the current <see cref="SelectionMode"/>, this will affect the current selection 
         /// </summary>
-        public SelectionMode CurrentSelectionMode {
-            get => selectionMode;
+        public static SelectionMode CurrentSelectionMode {
+            get => active.selectionMode;
             set {
                 ChangeSelectionMode(value);
             }
@@ -35,38 +42,38 @@ namespace WorldBuilder.World
         /// <summary>
         /// Get or Set the Type restriction, if a restriction has been set, the selection won't allow items that doesn't fetch that Type
         /// </summary>
-        public Type TypeRestriction {
-            get => typeRestriction;
+        public static Type TypeRestriction {
+            get => active.typeRestriction;
             set {
-                typeRestriction = value;
+                active.typeRestriction = value;
                 List<WorldObject> toKeep = new List<WorldObject>();
-                foreach (WorldObject item in selected) {
-                    if (item.GetComponent(typeRestriction) != null) {
+                foreach (WorldObject item in active.selected) {                   
+                    if (item != null && item.GetComponent(active.typeRestriction) != null) {
                         toKeep.Add(item);
                     }
-                    selected = toKeep;
                 }
+                active.selected = toKeep;
             }
         }
 
         /// <summary>
         /// True if a <see cref="TypeRestriction"/> has been set
         /// </summary>
-        public bool HasTypeRestriction => typeRestriction != null;
+        public static bool HasTypeRestriction => TypeRestriction != null;
 
         /// <summary>
         /// Returns the active selection (returns the first selected if in <see cref="SelectionMode.many"/>)
         /// </summary>
-        public WorldObject Selected
+        public static WorldObject Selected
         {
             get {
-                switch (selectionMode)
+                switch (CurrentSelectionMode)
                 {
                     case SelectionMode.single:
                     case SelectionMode.many:
-                        return selected.FirstOrDefault();
+                        return active.selected.FirstOrDefault();
                     case SelectionMode.none:
-                        throw new Exception(string.Format("Impossible to get selection this way in {0} SelectionMode", selectionMode));
+                        throw new Exception(string.Format("Impossible to get selection this way in {0} SelectionMode", CurrentSelectionMode));
                 }
                 return null;
             }
@@ -75,17 +82,17 @@ namespace WorldBuilder.World
         /// <summary>
         /// Returns every selected items in <see cref="SelectionMode.many"/>
         /// </summary>
-        public List<WorldObject> ManySelected
+        public static List<WorldObject> ManySelected
         {
             get
             {
-                switch (selectionMode)
+                switch (CurrentSelectionMode)
                 {
                     case SelectionMode.many:
-                        return selected;
+                        return active.selected;
                     case SelectionMode.single:
                     case SelectionMode.none:
-                        throw new Exception(string.Format("Impossible to get selection this way in {0} SelectionMode", selectionMode));
+                        throw new Exception(string.Format("Impossible to get selection this way in {0} SelectionMode", CurrentSelectionMode));
                 }
                 return null;
             }
@@ -97,36 +104,38 @@ namespace WorldBuilder.World
         /// Changes the active <see cref="SelectionMode"/> (does the same thing as <see cref="CurrentSelectionMode"/> setter)
         /// </summary>
         /// <param name="target"></param>
-        public void ChangeSelectionMode(SelectionMode target) {
+        public static void ChangeSelectionMode(SelectionMode target) {
             switch (target)
             {
                 case SelectionMode.single:
-                    selected = new List<WorldObject>() {Selected};
+                    active.selected = new List<WorldObject>() {Selected};
                     break;
                 case SelectionMode.many:
                     break;
                 case SelectionMode.none:
-                    selected = null;
+                    active.selected = null;
                     break;
             }
-            selectionMode = target;
+            active.selectionMode = target;
         }
 
         /// <summary>
         /// Remove every item from the selection
         /// </summary>
-        public void ClearSelection() {
-            selected = new List<WorldObject>();
+        public static void ClearSelection() {
+            active.selected = new List<WorldObject>();
+            onSelectionChanged.Invoke(active.selected);
         }
 
         /// <summary>
         /// Select one or many items (this will clear the previous selection)
         /// </summary>
         /// <param name="selection">Items to add to the selection</param>
-        public void Select(params WorldObject[] selection) {
-            if (IsValidSelection(selection)) {
+        public static void Select(params WorldObject[] selection) {
+            if (active.IsValidSelection(selection)) {
                 ClearSelection();
-                selected.AddRange(selection);
+                active.selected.AddRange(selection);
+                onSelectionChanged.Invoke(active.selected);
             }
         }
 
@@ -134,9 +143,10 @@ namespace WorldBuilder.World
         /// Select one or many items (this won't clear the previous selection)
         /// </summary>
         /// <param name="selection">Items to add to the selection</param>
-        public void AddToSelection(params WorldObject[] selection) {
-            if (IsValidSelection(selection)) {
-                selected.AddRange(selected);
+        public static void AddToSelection(params WorldObject[] selection) {
+            if (active.IsValidSelection(selection)) {
+                active.selected.AddRange(selection);
+                onSelectionChanged.Invoke(active.selected);
             }
         }
 
@@ -144,11 +154,12 @@ namespace WorldBuilder.World
         /// Remove one or many items from the current selection
         /// </summary>
         /// <param name="selection">Items to add to the selection</param>
-        public void RemoveFromSelection(params WorldObject[] selection) {
+        public static void RemoveFromSelection(params WorldObject[] selection) {
             foreach (WorldObject worldObject in selection) {
-                if (selected.Contains(worldObject))
-                    selected.Remove(worldObject);
+                if (active.selected.Contains(worldObject))
+                    active.selected.Remove(worldObject);                
             }
+            onSelectionChanged.Invoke(active.selected);
         }
 
         /// <summary>
@@ -156,7 +167,7 @@ namespace WorldBuilder.World
         /// </summary>
         /// <param name="selection">Items to add to the selection</param>
         /// <returns>Returns false if failed to Select</returns>
-        public bool TrySelect(params WorldObject[] selection) {
+        public static bool TrySelect(params WorldObject[] selection) {
             try
             {
                 Select(selection);
@@ -172,7 +183,7 @@ namespace WorldBuilder.World
         /// </summary>
         /// <param name="selection">Items to add to the selection</param>
         /// <returns>Returns false if failed to Select</returns>
-        public bool TryAddToSelection(params WorldObject[] selection)
+        public static bool TryAddToSelection(params WorldObject[] selection)
         {
             try
             {
@@ -189,16 +200,29 @@ namespace WorldBuilder.World
         /// Returns selected items as <typeparamref name="TItem"/> (throws cast errors)
         /// </summary>
         /// <typeparam name="TItem">This type should inherit from <see cref="WorldObject"/></typeparam>
-        public List<TItem> GetSelectedAs<TItem>() where TItem : WorldObject {
-            return selected as List<TItem>;
+        public static List<TItem> GetSelectedAs<TItem>() where TItem : WorldObject {
+            return active.selected as List<TItem>;
         }
 
         /// <summary>
         /// Returns selected items that has the type <typeparamref name="TItem"/> (doesn't throw cast errors, but doesn't return invalid items)
         /// </summary>
         /// <typeparam name="TItem">This type should inherit from <see cref="WorldObject"/></typeparam>
-        public List<TItem> GetSelectedOfType<TItem>() where TItem : WorldObject {
-            return selected.Where(i => i is TItem) as List<TItem>;
+        public static List<TItem> GetSelectedOfType<TItem>() where TItem : WorldObject {
+            return active.selected.Where(i => i is TItem) as List<TItem>;
+        }
+
+        /// <summary>
+        /// Return true if every <paramref name="selection"/> are selected
+        /// </summary>
+        /// <param name="selection">Items to check</param>
+        public static bool Contains(params WorldObject[] selection) {
+            foreach (WorldObject worldObject in selection)
+            {
+                if (!active.selected.Contains(worldObject))
+                    return false;
+            }
+            return true;
         }
         #endregion
 
