@@ -6,23 +6,58 @@ using System.Linq;
 
 namespace WorldBuilder.Behaviours
 {
+    /// <summary>
+    /// A <see cref="Behaviour"/> can be attached to any <see cref="IBehaviourable"/> that verifies <see cref="TypeRestrictions"/> and add a specific behaviour
+    /// </summary>
     public abstract class Behaviour : MonoBehaviour
     {
         #region Enums
-        public enum UnicityConstraintType { unique, uniqueByOrigin, multiple }
+        public enum UnicityConstraintType {
+            /// <summary>
+            /// This constraint allows only one <see cref="Behaviour"/> of this type attached per object
+            /// </summary>
+            unique,
+            /// <summary>
+            /// This constraint allows only one <see cref="Behaviour"/> of this type attached to an object per <see cref="Origin"/>
+            /// </summary>
+            uniqueByOrigin,
+            /// <summary>
+            /// This contraint doesn't check number of attached <see cref="Behaviour"/> of same type
+            /// </summary>
+            multiple
+        }
         #endregion
 
         #region Properties
+        /// <summary>
+        /// The object that has attached the <see cref="Behaviour"/> to the <see cref="Target"/>
+        /// </summary>
         public object Origin { get; private set; }
 
+        /// <summary>
+        /// The <see cref="IBehaviourable"/> item that will be affected by the <see cref="Behaviour"/>
+        /// </summary>
         public IBehaviourable Target { get; private set; }
 
+        /// <summary>
+        /// The <see cref="Behaviour"/>'s <see cref="UnicityConstraintType"/> (override this to change the value)
+        /// </summary>
         public virtual UnicityConstraintType UnicityConstraint => UnicityConstraintType.unique;
 
+        /// <summary>
+        /// An array of type that are allowed for <see cref="Target"/> (override this to change the value, null => everything allowed)
+        /// </summary>
         public virtual Type[] TypeRestrictions => new Type[]{typeof(MonoBehaviour)};
         #endregion
 
         #region Static Methods
+        /// <summary>
+        /// Attaches a <see cref="Behaviour"/> of type <typeparamref name="TBehaviour"/> to the <paramref name="target"/>
+        /// </summary>
+        /// <typeparam name="TBehaviour">The type of the <see cref="Behaviour"/></typeparam>
+        /// <param name="target">The <see cref="IBehaviourable"/> which the <see cref="Behaviour"/> will be attached</param>
+        /// <param name="origin">The object that has attached the <see cref="Behaviour"/> to the <see cref="Target"/></param>
+        /// <returns>The attached <see cref="Behaviour"/></returns>
         public static TBehaviour Attach<TBehaviour>(IBehaviourable target, object origin) where TBehaviour : Behaviour
         {
             TBehaviour behaviour = target.gameObject.AddComponent<TBehaviour>();
@@ -43,6 +78,9 @@ namespace WorldBuilder.Behaviours
         #endregion
 
         #region Public Methods
+        /// <summary>
+        /// Detach the behaviour from its <see cref="Target"/>
+        /// </summary>
         public virtual void Detach() {
             Exit();
             DestroyImmediate(this);
@@ -50,7 +88,7 @@ namespace WorldBuilder.Behaviours
         #endregion
 
         #region Private Methods
-        bool CheckUnicityConstraint()
+        protected virtual bool CheckUnicityConstraint()
         {
             switch (UnicityConstraint)
             {
@@ -77,7 +115,7 @@ namespace WorldBuilder.Behaviours
             return true;
         }
 
-        bool CheckTypeConstraint()
+        protected virtual bool CheckTypeConstraint()
         {
             if (TypeRestrictions == null || TypeRestrictions.Length == 0) return true;
 
