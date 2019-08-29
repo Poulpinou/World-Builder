@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace WorldBuilder.Blueprints
 {
@@ -47,6 +48,11 @@ namespace WorldBuilder.Blueprints
             for (int i = 0; i < Cells.Length; i++)
             {
                 Cells[i].Datas = Datas.Floors[CurrentFloor].cells[i];
+            }
+
+            foreach(BlueprintDatas.Floor floor in Datas.Floors)
+            {
+                floor.IsGhosted = floor.Number > CurrentFloor;
             }
         }
 

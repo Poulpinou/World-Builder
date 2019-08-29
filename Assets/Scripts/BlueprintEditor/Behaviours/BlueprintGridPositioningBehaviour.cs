@@ -29,10 +29,11 @@ namespace WorldBuilder.Blueprints
         protected override void FollowMouse()
         {
             BlueprintGridCell cell = InputManager.RaycastObjectFromMouse<BlueprintGridCell>(BlueprintGrid.GridLayerMask);
-            if (cell != null)
+            if (cell != null && cell.Datas != activeCell)
             {
                 activeCell = cell.Datas;
                 transform.position = cell.transform.position;
+                UpdateMaterial();
             }
         }
 
@@ -47,9 +48,6 @@ namespace WorldBuilder.Blueprints
             {
                 activeCell.AddItem(Target as IBlueprintCellable);
                 Detach();
-            }
-            else {
-                Debug.Log("Invalid Position");
             }
         }
 

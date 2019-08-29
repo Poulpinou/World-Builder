@@ -32,12 +32,12 @@ namespace WorldBuilder.Behaviours
         /// <summary>
         /// The object that has attached the <see cref="Behaviour"/> to the <see cref="Target"/>
         /// </summary>
-        public object Origin { get; private set; }
+        public object Origin { get; protected set; }
 
         /// <summary>
         /// The <see cref="IBehaviourable"/> item that will be affected by the <see cref="Behaviour"/>
         /// </summary>
-        public IBehaviourable Target { get; private set; }
+        public IBehaviourable Target { get; protected set; }
 
         /// <summary>
         /// The <see cref="Behaviour"/>'s <see cref="UnicityConstraintType"/> (override this to change the value)
@@ -62,6 +62,42 @@ namespace WorldBuilder.Behaviours
         {
             TBehaviour behaviour = target.gameObject.AddComponent<TBehaviour>();
 
+            if (behaviour.GetType() == typeof(Behaviour<>))
+            {
+                Debug.Log(string.Format("You called Attach<{0}>() on a Behaviour that requires params, try Attach<TBehaviour, TParam>(TParam params) instead", typeof(TBehaviour).Name));
+                Destroy(behaviour);
+                return null;
+            }
+
+            behaviour.Origin = origin;
+            behaviour.Target = target;
+            
+
+            if (!behaviour.CheckUnicityConstraint() || !behaviour.CheckTypeConstraint())
+            {
+                Destroy(behaviour);
+                return null;
+            }
+            
+            behaviour.Enter();
+
+            return behaviour;
+        }
+
+        /// <summary>
+        /// Attaches a <see cref="Behaviour"/> of type <typeparamref name="TBehaviour"/> to the <paramref name="target"/> and sets its <typeparamref name="TParams"/>
+        /// </summary>
+        /// <typeparam name="TBehaviour">The type of the <see cref="Behaviour"/></typeparam>
+        /// <typeparam name="TParams">The type of the expected params</typeparam>
+        /// <param name="target">The <see cref="IBehaviourable"/> which the <see cref="Behaviour"/> will be attached</param>
+        /// <param name="inputParams">The value of the params</param>
+        /// <param name="origin">The object that has attached the <see cref="Behaviour"/> to the <see cref="Target"/></param>
+        /// <returns>The attached <see cref="Behaviour"/></returns>
+        public static TBehaviour Attach<TBehaviour, TParams>(IBehaviourable target, TParams inputParams, object origin) where TBehaviour : Behaviour<TParams>
+        {
+            TBehaviour behaviour = target.gameObject.AddComponent<TBehaviour>();
+
+            behaviour.inputParams = inputParams;
             behaviour.Origin = origin;
             behaviour.Target = target;
 
@@ -70,7 +106,7 @@ namespace WorldBuilder.Behaviours
                 Destroy(behaviour);
                 return null;
             }
-            
+
             behaviour.Enter();
 
             return behaviour;
@@ -163,5 +199,11 @@ namespace WorldBuilder.Behaviours
         }
         #endregion
 #endif
+    }
+
+    public abstract class Behaviour<TParams> : Behaviour {
+        #region Publiv Variables
+        public TParams inputParams;
+        #endregion
     }
 }

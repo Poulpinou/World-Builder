@@ -44,11 +44,13 @@ namespace WorldBuilder.Behaviours
         {
             InitialTransform = Target.transform;
             InputManager.Map.BlueprintEditor.SetCallbacks(this);
+            Target.AttachBehaviour<TempMaterialBehaviour, Material>(GameSettings.Settings.validMaterial, this);
         }
 
         protected override void Exit()
         {
             InputManager.Map.BlueprintEditor.SetCallbacks(null);
+            Target.DetachAllBehaviours(this);
         }
 
         protected virtual void FollowMouse() {
@@ -58,6 +60,14 @@ namespace WorldBuilder.Behaviours
             if (Physics.Raycast(ray, out hit))
             {
                 Target.transform.position = hit.point;
+                UpdateMaterial();
+            }
+        }
+
+        protected virtual void UpdateMaterial() {
+            TempMaterialBehaviour behaviour = Target.GetBehaviour<TempMaterialBehaviour>();
+            if (behaviour != null) {
+                behaviour.ChangeMaterial(TargetHasValidPosition() ? GameSettings.Settings.validMaterial : GameSettings.Settings.invalidMaterial);
             }
         }
 

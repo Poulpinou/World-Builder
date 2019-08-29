@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
+using WorldBuilder.Behaviours;
 
 namespace WorldBuilder.Blueprints
 {
@@ -50,6 +51,10 @@ namespace WorldBuilder.Blueprints
             public List<BuildableObject> furnitures;
             #endregion
 
+            #region Private Variables
+            bool isGhosted = false;
+            #endregion
+
             #region Constructors
             public Floor(int floorNumber, Vector2Int dimensions)
             {
@@ -74,6 +79,31 @@ namespace WorldBuilder.Blueprints
             public bool IsEmpty {
                 get {
                     return !cells.Any(c => c.Items.Count > 0);
+                }
+            }
+
+            public bool IsGhosted {
+                get => isGhosted;
+                set {
+                    if (IsGhosted && value == false)
+                    {
+                        foreach (BlueprintCell cell in cells)
+                        {
+                            foreach (IBlueprintCellable item in cell.Items) {
+                                (item as WorldObject).DetachAllBehaviours(this);
+                            }
+                        }
+                    }
+                    else if (!IsGhosted && value == true) {
+                        foreach (BlueprintCell cell in cells)
+                        {
+                            foreach (IBlueprintCellable item in cell.Items)
+                            {
+                                (item as WorldObject).AttachBehaviour<GhostingBehaviour, Material>(GameSettings.Settings.ghostedMaterial, this);
+                            }
+                        }
+                    }
+                    isGhosted = value;
                 }
             }
             #endregion

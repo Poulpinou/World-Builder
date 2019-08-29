@@ -72,7 +72,20 @@ namespace WorldBuilder.Behaviours
         {
             return Behaviour.Attach<TBehaviour>(behaviourable, origin);
         }
-        
+
+        /// <summary>
+        /// Attaches a <see cref="Behaviour"/> of type <typeparamref name="TBehaviour"/> to this and set its <typeparamref name="TParams"/>
+        /// </summary>
+        /// <typeparam name="TBehaviour">The type of the <see cref="Behaviour"/></typeparam>
+        /// /// <typeparam name="TParams">The type of the expected params</typeparam>
+        /// /// <param name="inputParams">The value of the params</param>
+        /// <param name="origin">The object that asked to attach the behaviour</param>
+        /// <returns>The attached <typeparamref name="TBehaviour"/></returns>
+        public static TBehaviour AttachBehaviour<TBehaviour, TParams>(this IBehaviourable behaviourable, TParams inputParams, object origin) where TBehaviour : Behaviour<TParams>
+        {
+            return Behaviour.Attach<TBehaviour, TParams>(behaviourable, inputParams, origin);
+        }
+
         /// <summary>
         /// Removes a single <typeparamref name="TBehaviour"/> from this
         /// </summary>
