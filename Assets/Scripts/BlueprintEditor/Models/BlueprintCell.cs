@@ -21,7 +21,7 @@ namespace WorldBuilder.Blueprints
     //public enum BlueprintCellAnchor {full, midUp, midDown}
 
     [Serializable]
-    public class BlueprintCell : MonoBehaviour
+    public class BlueprintCell
 	{
         #region Private Variables
         List<IBlueprintCellable> items;

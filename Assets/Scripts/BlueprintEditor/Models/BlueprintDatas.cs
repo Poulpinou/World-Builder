@@ -6,17 +6,19 @@ using System;
 namespace WorldBuilder.Blueprints
 {
     [Serializable]
-	public class BlueprintDatas : MonoBehaviour
+	public class BlueprintDatas
 	{
-        #region Public Variables
-        public List<Floor> floors;
+        #region Properties
+        public List<Floor> Floors { get; private set; }
+        public Vector2Int Dimensions { get; private set; }
         #endregion
 
         #region Constructors
         public BlueprintDatas(Vector2Int dimensions)
         {
-            floors = new List<Floor>();
-            floors.Add(new Floor(0, dimensions));
+            Dimensions = dimensions;
+            Floors = new List<Floor>();
+            Floors.Add(new Floor(0, Dimensions));
         }
         #endregion
 
@@ -24,7 +26,7 @@ namespace WorldBuilder.Blueprints
         [Serializable]
 		public class Floor
         {
-            const int FLOOR_HEIGHT = 2;
+            public const int FLOOR_HEIGHT = 2;
 
             #region Public Variables
             public BlueprintCell[] cells;
