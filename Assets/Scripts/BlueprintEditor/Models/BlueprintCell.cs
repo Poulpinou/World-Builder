@@ -31,6 +31,7 @@ namespace WorldBuilder.Blueprints
         public Vector2Int GridPos { get; private set; }
         public int Height { get; private set; }
         public Vector3 Position => new Vector3(GridPos.x, Height, GridPos.y);
+        public List<IBlueprintCellable> Items => items;
         #endregion
 
         #region Construtors

@@ -16,11 +16,14 @@ namespace WorldBuilder.Blueprints
 
         #region Properties
         public static BlueprintModes Modes => active.GetComponent<BlueprintModes>();
+
+        public static BlueprintDatas ActiveDatas { get; private set; }
         #endregion
 
         #region Public Methods
         public void BuildBlueprint(Blueprint blueprint, int versionIndex = 0) {
-            grid.SetDatas(blueprint.Versions[versionIndex].datas);
+            ActiveDatas = blueprint.Versions[versionIndex].datas;
+            grid.SetDatas(ActiveDatas);
         }
         #endregion
 
@@ -28,7 +31,7 @@ namespace WorldBuilder.Blueprints
         private void Start()
         {
             //temp
-            BuildBlueprint(new Blueprint("Test", new Vector2Int(32, 32)));
+            BuildBlueprint(new Blueprint("Test", new Vector2Int(16, 16)));
             InputManager.Map.BlueprintEditor.Enable();
             Modes.ChangeState<BlueprintMode_Foundations>();
         }

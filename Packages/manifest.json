@@ -1,10 +1,13 @@
 {
   "dependencies": {
     "com.dgtools.core": "https://github.com/Poulpinou/DGTools-Core.git#v0.1.3",
+    "com.dgtools.statemachine": "https://github.com/Poulpinou/DGTools-StateMachine.git#v0.0.3",
+    "com.dgtools.ui": "https://github.com/Poulpinou/DGTools-UI.git#Release_v0.1.5",
     "com.unity.ads": "2.0.8",
     "com.unity.analytics": "3.3.2",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.editorcoroutines": "0.0.2-preview.1",
+    "com.unity.inputsystem": "0.9.4-preview",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.purchasing": "2.0.6",
     "com.unity.textmeshpro": "2.0.1",
@@ -54,6 +57,14 @@
     "com.dgtools.core": {
       "hash": "d3539a11567552cb1d5f87412fdc08a04fe47423",
       "revision": "v0.1.3"
+    },
+    "com.dgtools.statemachine": {
+      "hash": "24cccdf9b6f0abd4236b0c59d27f9c659f58d009",
+      "revision": "v0.0.3"
+    },
+    "com.dgtools.ui": {
+      "hash": "97038514ffb428a751d039e73c67a22a49f956bb",
+      "revision": "Release_v0.1.5"
     }
   }
 }

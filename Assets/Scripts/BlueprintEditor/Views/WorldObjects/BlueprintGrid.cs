@@ -12,9 +12,12 @@ namespace WorldBuilder.Blueprints
         #endregion
 
         #region Properties
+        public static int GridLayerMask => LayerMask.GetMask("Blueprints.Grid");
+
         public int CurrentFloor { get; private set; }
         public BlueprintDatas Datas { get; private set; } 
         public BlueprintGridCell[] Cells { get; private set; }
+        public bool IsShown { get; private set; }
         #endregion
 
         #region Public Methods
@@ -46,6 +49,29 @@ namespace WorldBuilder.Blueprints
                 Cells[i].Datas = Datas.Floors[CurrentFloor].cells[i];
             }
         }
+
+        public void Show() {
+            foreach (BlueprintGridCell cell in Cells)
+            {
+                cell.GetComponent<Renderer>().enabled = true;
+            }
+            IsShown = true;
+        }
+
+        public void Hide() {
+            foreach (BlueprintGridCell cell in Cells)
+            {
+                cell.GetComponent<Renderer>().enabled = false;
+            }
+            IsShown = false;
+        }
+
+        public void SwitchDisplay() {
+            if (IsShown)
+                Hide();
+            else
+                Show();
+        }
         #endregion
 
         #region Private Methods
@@ -60,6 +86,8 @@ namespace WorldBuilder.Blueprints
             }
 
             Cells = GetComponentsInChildren<BlueprintGridCell>();
+
+            IsShown = true;
         }
         #endregion
     }

@@ -6,6 +6,7 @@ namespace WorldBuilder.Blueprints
 {
     public interface IBlueprintCellable
     {
+        GameObject gameObject { get; }
         BlueprintCellSlot CellSlot { get; set; }
         //BlueprintCellAnchor CellAnchor { get; set; }
     }
@@ -49,6 +50,19 @@ namespace WorldBuilder.Blueprints
             }
 
             cellable.CellSlot = (BlueprintCellSlot)slot;
+        }
+
+        public static void RotateOnCell(this IBlueprintCellable cellable, int factor)
+        {
+            if (factor > 0)
+            {
+                cellable.SetToNextSlot();
+            }
+            else
+            {
+                cellable.SetToPreviousSlot();
+            }
+            cellable.gameObject.transform.eulerAngles += new Vector3(0, 90 * factor, 0);
         }
     }
 }

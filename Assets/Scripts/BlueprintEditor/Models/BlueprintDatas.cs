@@ -2,15 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace WorldBuilder.Blueprints
 {
     [Serializable]
 	public class BlueprintDatas
 	{
+        public const int MAX_FLOOR_COUNT = 10;
+
         #region Properties
         public List<Floor> Floors { get; private set; }
         public Vector2Int Dimensions { get; private set; }
+        public bool CanAddFloor {
+            get {
+                return Floors.Count == 0 || (Floors.Count < MAX_FLOOR_COUNT && !Floors.OrderByDescending(f => f.Number).First().IsEmpty);
+            }
+        }
         #endregion
 
         #region Constructors
@@ -19,6 +27,15 @@ namespace WorldBuilder.Blueprints
             Dimensions = dimensions;
             Floors = new List<Floor>();
             Floors.Add(new Floor(0, Dimensions));
+        }
+        #endregion
+
+        #region Public Methods
+        public void AddFloor() {
+            if (CanAddFloor) {
+                Floors.Add(new Floor(Floors.Count, Dimensions));
+                BlueprintEditor.active.grid.ChangeFloor(Floors.Count - 1);
+            }
         }
         #endregion
 
@@ -53,6 +70,12 @@ namespace WorldBuilder.Blueprints
 
             #region Properties
             public int Number { get; private set; }
+
+            public bool IsEmpty {
+                get {
+                    return !cells.Any(c => c.Items.Count > 0);
+                }
+            }
             #endregion
         }
         #endregion
