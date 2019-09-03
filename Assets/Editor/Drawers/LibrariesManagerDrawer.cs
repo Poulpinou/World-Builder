@@ -19,7 +19,7 @@ namespace WorldBuilder.Libraries.Editor
 
             DrawDefaultInspector();
 
-            GUILayout.BeginVertical(EditorStyles.helpBox);
+            /*GUILayout.BeginVertical(EditorStyles.helpBox);
 
             if (string.IsNullOrEmpty(librariesManager.folderPath)) {
                 EditorGUILayout.LabelField("Please set the folder path", EditorStyles.boldLabel);
@@ -48,6 +48,7 @@ namespace WorldBuilder.Libraries.Editor
             }
 
             GUILayout.EndHorizontal();
+            */
         }
 
         void CreateLibraryFolder(Type libraryType) {

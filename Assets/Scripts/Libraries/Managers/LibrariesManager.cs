@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DGTools;
-using System.IO;
 using System.Linq;
 
 namespace WorldBuilder.Libraries
@@ -14,41 +13,49 @@ namespace WorldBuilder.Libraries
         [FolderPath(folderPathRestriction = "Resources")] public string folderPath = "";
         #endregion
 
+        #region Private Variables
+        Library[] libraries;
+        #endregion
+
+        #region Properties
+        public static Library[] Libraries => active.libraries;
+        #endregion
+
         #region Public Methods
-        public static TLibrary[] GetLibraries<TLibrary>() where TLibrary : Library
+        public static IEnumerable<TItem> Query<TItem>(bool strictTypeMatch = false) where TItem : WorldObject
         {
-            return Resources.LoadAll<TLibrary>(GetLibrariesPath<TLibrary>());
+            return Libraries.SelectMany(l => l.Items).Cast<TItem>();
         }
 
-        public static TLibrary GetLibrary<TLibrary>(string name) where TLibrary : Library
+        public static IEnumerable<WorldObject> QueryAll()
         {
-            string path = GetLibraryPath<TLibrary>(name);
-            TLibrary library = Resources.Load<TLibrary>(path);
-
-            if (library == null) {
-                throw new FileNotFoundException(string.Format("No library file found at {0}", path));
-            }
-
-            return library;
+            return Libraries.SelectMany(l => l.Items);
         }
 
-        public static string GetLibrariesPath<TLibrary>() where TLibrary : Library
+        public static Library GetLibraryFromID(string libraryID)
         {
-            return Path.Combine(active.folderPath, typeof(TLibrary).Name);
+            return Libraries.Where(l => l.LibraryID == libraryID).FirstOrDefault();
         }
 
-        public static string GetLibraryPath<TLibrary>(string libraryName) where TLibrary : Library
+        public static WorldObject GetItemFromID(string fullLibraryID)
         {
-            return Path.Combine(GetLibrariesPath<TLibrary>(), libraryName);
+            LibraryLink link = new LibraryLink(fullLibraryID);
+            return link.Item;
         }
+        #endregion
 
-        public static IEnumerable<TItem> Query<TLibrary, TItem>(string name) where TLibrary : Library<TItem> where TItem : WorldObject {
-            return GetLibrary<TLibrary>(name).Items;
-        }
-
-        public static IEnumerable<TItem> QueryAll<TLibrary, TItem>() where TLibrary : Library<TItem> where TItem : WorldObject
+        #region Runtime MEthods
+        protected override void Awake()
         {
-            return GetLibraries<TLibrary>().SelectMany(l => l.Items);
+            base.Awake();
+            libraries = Resources.LoadAll<Library>(active.folderPath);
+        }
+        #endregion
+
+        #region Editor Methods
+        public static void ForceEditorRef()
+        {
+            FindObjectOfType<LibrariesManager>().Awake();
         }
         #endregion
     }

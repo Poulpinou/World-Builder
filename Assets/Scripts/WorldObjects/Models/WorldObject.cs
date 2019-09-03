@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using WorldBuilder.Behaviours;
 using WorldBuilder.Inputs;
+using WorldBuilder.Libraries;
 using DGTools.UI;
 using DGTools;
 
@@ -17,8 +18,7 @@ namespace WorldBuilder
         [Header("General infos")]
         [SerializeField] string displayedName;
         [SerializeField] string description;
-        [Tooltip("Dimensions in World Unit")]
-        [SerializeField] Vector3Int dimensions = Vector3Int.one;
+        [SerializeField] Texture2D icon;
         #endregion
 
         #region Properties
@@ -31,7 +31,7 @@ namespace WorldBuilder
 
         public virtual string Description => description;
 
-        public virtual Vector3Int Dimensions => dimensions;
+        public virtual Texture2D Icon => icon;
 
         public virtual Color tileColor => Color.white;
 

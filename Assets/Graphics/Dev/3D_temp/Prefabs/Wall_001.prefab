@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1740325885104169749}
   - component: {fileID: 2214766121935062169}
   - component: {fileID: 9099808959889463166}
+  - component: {fileID: 8653474820194146546}
   m_Layer: 0
   m_Name: Wall_001
   m_TagString: Untagged
@@ -67,6 +68,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -105,6 +107,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayedName: Wooden Wall
-  description: 
-  dimensions: {x: 1, y: 2, z: 1}
+  description: A simple wall made of wood
+  icon: {fileID: 2800000, guid: f11ed60bbba2bd24ba1f040cfdbe9dbb, type: 3}
   cellSlot: 10
+--- !u!114 &8653474820194146546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7378991289669577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc85520941241e14c8dbf8c6675d343c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputParams:
+    library: {fileID: 11400000, guid: f9c9eea082138c94ca9aa3db35132a6f, type: 2}
+    item: {fileID: 9099808959889463166}
+    itemID: 2942616aeae64c59bdc7cb1155c3f8da

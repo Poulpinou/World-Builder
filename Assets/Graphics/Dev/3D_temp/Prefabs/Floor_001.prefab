@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5280688122757602664}
   - component: {fileID: 2441266676883462932}
   - component: {fileID: -8837309275144551889}
+  - component: {fileID: -105965118092569912}
   m_Layer: 0
   m_Name: Floor_001
   m_TagString: Untagged
@@ -67,6 +68,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -106,5 +108,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayedName: Wooden Floor
   description: 
-  dimensions: {x: 1, y: 2, z: 1}
+  icon: {fileID: 2800000, guid: f7dedf0696e114945b20c5fb80d74a13, type: 3}
   cellSlot: 0
+--- !u!114 &-105965118092569912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5869338008024869300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc85520941241e14c8dbf8c6675d343c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputParams:
+    library: {fileID: 11400000, guid: 4938ae09e57fd354dad49ef3153a76d6, type: 2}
+    item: {fileID: -8837309275144551889}
+    itemID: 819b7423b858488faecdcfc64609d294
